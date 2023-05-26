@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="" method="POST" class="py-0 px-1 d-flex">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="div-field px-2">
+        <label class="form-label my-0">{{ field.label }}</label>
+        {{ field }}
+    </div>
+    {% endfor %}
+    <div class="py-4">
+        <button class="btn btn-primary py-1 " style="width: 90px" type="submit">
+            Filtrar
+        </button>
+    </div>
+
+</form>
+
+{% include 'tabla.html' %}
+
+
+{% block javascript %}
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+    crossorigin="anonymous"></script>
+<script>
+      $("#id_codigo_region_selector").change(function () {
+          const codigo_region= $(this).val();  // cambiar por el nombre del id deseado
+          console.log(codigo_region);
+          $.ajax({                       //
+              type: "POST",
+              url: '{% url "getregion" %}',
+              data: {
+                  'codigo_region': codigo_region,       // Coloque el id a consultar
+                  'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+              },
+              success: function (data) {   // `data` tiene la respuesta a la consulta
+                  let html_data = '<option value="">---------</option>';
+                  data.forEach(function (data) {
+                      html_data += `<option value="${data.curso}">${data.codigo_curso}</option>`
+                  });
+                  $("#codigo_curso_selector").html(html_data); // replace the contents of the topic input with the data that came from the server
+              }
+          });
+      });
+</script>
+{% endblock javascript %}
+
+{% endblock %}
